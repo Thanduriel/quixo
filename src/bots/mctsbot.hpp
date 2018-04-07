@@ -19,7 +19,7 @@ namespace Bots {
 		{
 			// for the root node
 			Node() : action(nullptr), winner(Game::GameResult::None) {}
-			Node(const Game::Board<5>& _board, const Game::Action* _action, Node* _parent, Game::CubeState _player)
+			Node(const Game::Board& _board, const Game::Action* _action, Node* _parent, Game::CubeState _player)
 				: boardState(_board),
 				action(_action),
 				parent(_parent),
@@ -32,7 +32,7 @@ namespace Bots {
 			int numWins = 0;
 			const Game::Action* action;
 			Game::CubeState player;
-			Game::Board<5> boardState;
+			Game::Board boardState;
 
 			Node* parent = nullptr;
 			Node* childs = nullptr;
@@ -42,7 +42,7 @@ namespace Bots {
 	public:
 		using BasicBot::BasicBot;
 
-		Game::Turn Step(const Game::Board<5>& _state)
+		Game::Turn Step(const Game::Board& _state)
 		{
 			m_allocator.reset();
 			m_numSimulations = 1;
@@ -107,10 +107,10 @@ namespace Bots {
 		std::pair<Node*, int> Expand(Node& _node)
 		{
 			using namespace Game;
-			Node* nodes = static_cast<Node*> (m_allocator.alloc(sizeof(Node) * Board<5>::ACTIONS.size() - 2));
+			Node* nodes = static_cast<Node*> (m_allocator.alloc(sizeof(Node) * Board::ACTIONS.size() - 2));
 			unsigned ind = 0;
 
-			for (const Action& a : Board<5>::ACTIONS)
+			for (const Action& a : Board::ACTIONS)
 			{
 				if (_node.boardState.Get(a.srcX, a.srcY) == _node.player)
 					continue;
@@ -157,8 +157,8 @@ namespace Bots {
 				// pick random action
 				const Action* act;
 				do {
-					int ind = Utils::g_random.Uniform(0, static_cast<int>(Board<5>::ACTIONS.size()-1));
-					act = &Board<5>::ACTIONS[ind];
+					int ind = Utils::g_random.Uniform(0, static_cast<int>(Board::ACTIONS.size()-1));
+					act = &Board::ACTIONS[ind];
 				} while (board.Get(act->srcX, act->srcY) == currentPlayer);
 				currentPlayer = currentPlayer == CubeState::Cross ? CubeState::Circle : CubeState::Cross;
 				board.Move(*act, currentPlayer);

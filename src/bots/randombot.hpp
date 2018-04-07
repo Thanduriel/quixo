@@ -10,12 +10,12 @@ namespace Bots {
 	public:
 		using BasicBot::BasicBot;
 
-		Game::Turn Step(const Game::Board<5>& _state)
+		Game::Turn Step(const Game::Board& _state)
 		{
 			using namespace Game;
 			const Action* action;
 			do{
-				action = &Board<5>::ACTIONS[Utils::g_random.Uniform(0, static_cast<int>(Board<5>::ACTIONS.size()) - 1)];
+				action = &Board::ACTIONS[Utils::g_random.Uniform(0, static_cast<int>(Board::ACTIONS.size()) - 1)];
 			} while (_state.Get(action->srcX, action->srcY) == m_enemySymbol);
 
 			return Turn(*action, m_symbol);

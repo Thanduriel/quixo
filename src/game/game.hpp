@@ -4,7 +4,7 @@
 
 namespace Game{
 
-	template<typename BotT1, typename BotT2, unsigned BoardSize = 5, unsigned MaxTurns = 200>
+	template<typename BotT1, typename BotT2, unsigned MaxTurns = 200>
 	class GameManager
 	{
 	public:
@@ -25,7 +25,7 @@ namespace Game{
 
 		GameResult Play()
 		{
-			Board<BoardSize> board;
+			Board board;
 
 			for (int i = 0; i < MaxTurns; ++i)
 			{

@@ -14,7 +14,7 @@ int main()
 	using namespace Game;
 	using namespace Bots;
 
-/*	Board<5> board;
+/*	Board board;
 	board.Move(Action(4, 0, 0, 0), CubeState::Cross);
 	board.Move(Action(4, 2, 0, 2), CubeState::Cross);
 	board.Move(Action(4, 2, 0, 2), CubeState::Circle);
@@ -40,7 +40,7 @@ int main()
 //	std::cout << GAME_RESULT[static_cast<int>(gameManager.Play())];
 
 	GameManager<Bots::MCTSBot<5, 500>, Bots::MCTSBot<5,200>> gameManager;
-	auto res = gameManager.Play(50);
+	auto res = gameManager.Play(10);
 	std::cout << res[0] << ", " << res[1] << ", " << res[2];
 
 	int i;

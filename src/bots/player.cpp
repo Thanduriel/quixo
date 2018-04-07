@@ -9,7 +9,7 @@ namespace Bots {
 		m_displayExt(_displayEx)
 	{}
 
-	Game::Turn Player::Step(const Game::Board<5>& _state)
+	Game::Turn Player::Step(const Game::Board& _state)
 	{
 		std::cout << "01234" << "\n";
 		_state.Print(std::cout);

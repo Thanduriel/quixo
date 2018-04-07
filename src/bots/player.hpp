@@ -7,7 +7,7 @@ namespace Bots {
 	public:
 		Player(Game::CubeState _symbol, bool _displayEx = true);
 
-		Game::Turn Step(const Game::Board<5>& _state);
+		Game::Turn Step(const Game::Board& _state);
 
 	private:
 		const bool m_displayExt;
