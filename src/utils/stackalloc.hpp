@@ -8,9 +8,9 @@ namespace Utils{
 	{
 	public:
 		StackAllocator() 
+			: bp(0),
+			memBlocks(1, malloc(_BlockSize))
 		{
-			newBlock();
-			bp = 0;
 		}
 		~StackAllocator()
 		{
@@ -43,21 +43,18 @@ namespace Utils{
 			return ptr;
 		}
 
-		//throws away extra blocks and resets to the default state
+		//resets state to overwrite current data
 		void reset()
 		{
-			for (size_t i = 1; i < memBlocks.size(); ++i)
-				free(memBlocks[i]);
-
-			memBlocks.resize(1);
 			bp = 0;
 		}
 	private:
 		void newBlock()
 		{
-			memBlocks.push_back(malloc(_BlockSize));
-			bp++;
-			sp = (char*)memBlocks.back();
+			++bp;
+			if(bp >= memBlocks.size())
+				memBlocks.push_back(malloc(_BlockSize));
+			sp = (char*)memBlocks[bp];
 		}
 
 		char* sp; // stack pointer

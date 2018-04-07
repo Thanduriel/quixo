@@ -30,6 +30,8 @@ namespace Game{
 			for (int i = 0; i < MaxTurns; ++i)
 			{
 				Turn turn = i % 2 ? m_bot1.Step(board) : m_bot2.Step(board);
+				// cant use enemy symbol cubes
+				assert(board.Get(turn.action.srcX, turn.action.srcY) != (i % 2 ? m_bot2.GetSymbol() : m_bot1.GetSymbol()));
 				board.Move(turn.action, turn.state);
 				
 				const GameResult res = board.Winner();

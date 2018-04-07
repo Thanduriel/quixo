@@ -50,7 +50,7 @@ namespace Bots {
 			Node root;
 			root.boardState = _state;
 			// first real move is from the player
-			root.player = GetOther(m_symbol);
+			root.player = m_enemySymbol;
 			auto& [nodes, count] = Expand(root);
 			root.childs = nodes;
 			root.numChilds = count;
@@ -93,7 +93,7 @@ namespace Bots {
 
 				++m_numSimulations;
 			} while ((std::chrono::steady_clock::now() - begin) < std::chrono::milliseconds(TurnTime));
-			std::cout << "explored paths: " << m_numSimulations << std::endl;
+		//	std::cout << "explored paths: " << m_numSimulations << std::endl;
 
 			Node* it = std::max_element(root.childs, root.childs + root.numChilds, [](const Node& lhs, const Node& rhs)
 			{
