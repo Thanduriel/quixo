@@ -115,60 +115,51 @@ namespace Game {
 				|| _action.srcY == 0 || _action.srcY == MAX_INDEX);
 		}
 
+		constexpr static std::array<uint32_t, 12> WIN_MASKS =
+		{
+			0b00000000000000000000000000011111,
+			0b00000000000000000000001111100000,
+			0b00000000000000000111110000000000,
+			0b00000000000011111000000000000000,
+			0b00000001111100000000000000000000,
+
+			0b00000000000100001000010000100001,
+			0b00000000001000010000100001000010,
+			0b00000000010000100001000010000100,
+			0b00000000100001000010000100001000,
+			0b00000001000010000100001000010000,
+
+			0b00000001000001000001000001000001,
+			0b00000000000100010001000100010000,
+		};
+
 		GameResult Winner() const
 		{
-			std::array<int, static_cast<int>(CubeState::COUNT)> fullLines{};
-
-			// x lines
-			for (int y = 0; y < BoardSize; ++y)
-			{
-				CubeState s = m_board[0][y];
-				++fullLines[s];
-				for (int x = 1; x < BoardSize; ++x)
-					if (m_board[x][y] != s)
-					{
-						--fullLines[s];
-						break;
-					}
-			}
-
-			// y lines
+			unsigned crosses = 0;
+			unsigned circles = 0;
 			for (int x = 0; x < BoardSize; ++x)
-			{
-				CubeState s = m_board[x][0];
-				++fullLines[s];
-				for (int y = 1; x < BoardSize; ++y)
-					if (m_board[x][y] != s)
-					{
-						--fullLines[s];
-						break;
-					}
-			}
-
-			// diagonals
-			const CubeState s = m_board[BoardSize/2][BoardSize/2];
-			fullLines[static_cast<int>(s)] += 2;
-			for (int i = 0; i < BoardSize; ++i)
-			{
-				if (m_board[i][i] != static_cast<int>(s))
+				for (int y = 0; y < BoardSize; ++y)
 				{
-					--fullLines[s];
-					break;
+					crosses |= m_board[x][y] == CubeState::Cross;
+					crosses <<= 1;
+					circles |= m_board[x][y] == CubeState::Circle;
+					circles <<= 1;
 				}
-			}
 
-			for (int i = 0; i < BoardSize; ++i)
+			int crossLines = 0;
+			int circleLines = 0;
+
+			auto isNotZero = [](uint32_t x) {return ~(~x & (x + ~0)) >> 31; };
+			for (uint32_t mask : WIN_MASKS)
 			{
-				if (m_board[i][MAX_INDEX-i] != static_cast<int>(s))
-				{
-					--fullLines[s];
-					break;
-				}
+				crossLines += isNotZero(mask & crosses);
+				circleLines += isNotZero(mask & circles);
 			}
+			
 
-			if (fullLines[1] > fullLines[2]) return GameResult::Cross;
-			else if (fullLines[1] < fullLines[2]) return GameResult::Circle;
-			else if (fullLines[1]) return GameResult::Draw;
+			if (crossLines > circleLines) return GameResult::Cross;
+			else if (circleLines > crossLines) return GameResult::Circle;
+			else if (circleLines) return GameResult::Draw;
 
 			return GameResult::None;
 		}
