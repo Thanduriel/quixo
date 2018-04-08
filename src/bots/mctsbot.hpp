@@ -42,10 +42,17 @@ namespace Bots {
 	public:
 		using BasicBot::BasicBot;
 
-		Game::Turn Step(const Game::Board& _state)
+		~MCTSBot()
+		{
+		//	std::cout << "step time: " << TurnTime 
+		//		<< ", avg simulations: " << m_numSimulationsTotal / m_numStepsPlayed << "\n";
+		}
+
+		Game::Turn Step(const Game::Board& _state) override
 		{
 			m_allocator.reset();
 			m_numSimulations = 1;
+			m_numSimulationsLog = 0;
 
 			Node root;
 			root.boardState = _state;
@@ -92,14 +99,22 @@ namespace Bots {
 				}
 
 				++m_numSimulations;
+				m_numSimulationsLog = std::log(static_cast<float>(m_numSimulations));
 			} while ((std::chrono::steady_clock::now() - begin) < std::chrono::milliseconds(TurnTime));
 		//	std::cout << "explored paths: " << m_numSimulations << std::endl;
+			m_numSimulationsTotal += m_numSimulations;
+			++m_numStepsPlayed;
 
 			Node* it = std::max_element(root.childs, root.childs + root.numChilds, [](const Node& lhs, const Node& rhs)
 			{
 				return lhs.numSimulations < rhs.numSimulations;
 			});
 			return Game::Turn(*it->action, m_symbol);
+		}
+
+		std::string GetName() const override
+		{
+			return "MCTSBot<" + std::to_string(MaxDepth) + ", " + std::to_string(TurnTime) + ">";
 		}
 
 	private:
@@ -126,14 +141,14 @@ namespace Bots {
 		// returns the node that should be expanded
 		Node& Select(Node& _parent)
 		{
-			float maxVal = 0.f;
+			float maxVal = -1.f;
 			Node* n;
 
 			for (int i = 0; i < _parent.numChilds; ++i)
 			{
 				Node& c = _parent.childs[i];
 				float v = static_cast<float>(c.numWins) / c.numSimulations;
-				v += 1.4f * std::sqrt(static_cast<float>(m_numSimulations) / c.numSimulations);
+				v += 1.4f * std::sqrt(m_numSimulationsLog / c.numSimulations);
 				if (v > maxVal)
 				{
 					maxVal = v;
@@ -170,6 +185,10 @@ namespace Bots {
 		}
 
 		int m_numSimulations;
+		float m_numSimulationsLog;
 		Utils::StackAllocator<32768> m_allocator;
+
+		uint64_t m_numSimulationsTotal = 0;
+		uint32_t m_numStepsPlayed = 0;
 	};
 }

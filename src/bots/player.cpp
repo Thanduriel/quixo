@@ -4,8 +4,8 @@
 
 namespace Bots {
 
-	Player::Player(Game::CubeState _symbol, bool _displayEx)
-		: BasicBot(_symbol),
+	Player::Player(bool _displayEx)
+		: BasicBot(),
 		m_displayExt(_displayEx)
 	{}
 

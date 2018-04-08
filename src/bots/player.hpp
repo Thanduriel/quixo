@@ -5,9 +5,10 @@ namespace Bots {
 	class Player : public BasicBot
 	{
 	public:
-		Player(Game::CubeState _symbol, bool _displayEx = true);
+		Player(bool _displayEx = true);
 
-		Game::Turn Step(const Game::Board& _state);
+		Game::Turn Step(const Game::Board& _state) override;
+		std::string GetName() const override { return "Input"; }
 
 	private:
 		const bool m_displayExt;

@@ -10,7 +10,7 @@ namespace Bots {
 	public:
 		using BasicBot::BasicBot;
 
-		Game::Turn Step(const Game::Board& _state)
+		Game::Turn Step(const Game::Board& _state) override
 		{
 			using namespace Game;
 			const Action* action;
@@ -20,5 +20,7 @@ namespace Bots {
 
 			return Turn(*action, m_symbol);
 		}
+
+		std::string GetName() const override { return "Random"; }
 	};
 }
