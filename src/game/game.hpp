@@ -44,14 +44,29 @@ namespace Game{
 			{
 				Turn turn = i % 2 ? m_bot1.Step(board) : m_bot2.Step(board);
 				// cant use enemy symbol cubes
-				assert(board.Get(turn.action.srcX, turn.action.srcY) != (i % 2 ? m_bot2.GetSymbol() : m_bot1.GetSymbol()));
-				board.Move(turn.action, turn.state);
+				assert(board.Get(turn.action.srcX, turn.action.srcY) 
+					!= (i % 2 ? m_bot2.GetSymbol() : m_bot1.GetSymbol()));
 
-				if (m_printMode == PrintMode::AllStates) board.Print(std::cout);
+				auto s = board.Get(turn.action.srcX, turn.action.srcY);
+				int n = board.GetNumSymbols(turn.state);
+				board.Move(turn.action, turn.state);
+				if (n > board.GetNumSymbols(turn.state) 
+					|| (s == CubeState::Blank && n+1 != board.GetNumSymbols(turn.state)))
+					int ue = 0;
+
+				if (m_printMode == PrintMode::AllStates)
+				{
+					board.Print(std::cout);
+					std::cout << "\n";
+				}
 				const GameResult res = board.Winner();
 				if (res != GameResult::None)
 				{
-					if (m_printMode == PrintMode::EndState) { board.Print(std::cout); std::cout << "\n"; }
+					if (m_printMode == PrintMode::EndState) 
+					{ 
+						board.Print(std::cout); 
+						std::cout << "\n"; 
+					}
 					return  res;
 				}
 			}

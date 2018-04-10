@@ -127,6 +127,9 @@ namespace Game {
 		}
 
 		CubeState Get(unsigned _idx, unsigned _idy) const;
+
+		// does not work for blanks!
+		int GetNumSymbols(CubeState _symbol) const;
 	private:
 		uint32_t m_crosses;
 		uint32_t m_circles;

@@ -16,6 +16,9 @@ int main()
 	using namespace Bots;
 
 	/*	Board board;
+		board.Move(Action(1, 0, 4, 0), CubeState::Cross);
+		board.Move(Action(1, 0, 0, 0), CubeState::Cross);
+		board.Print(std::cout);
 		board.Move(Action(4, 0, 0, 0), CubeState::Cross);
 		board.Move(Action(4, 2, 0, 2), CubeState::Cross);
 		board.Move(Action(4, 2, 0, 2), CubeState::Circle);
@@ -37,25 +40,26 @@ int main()
 		board.Move(Action(2, 0, 2, 4), CubeState::Cross);
 		std::cout << (board.Winner() == GameResult::Cross);*/
 
-		//	GameManager<Bots::Player, Bots::MCTSBot<5,500>> gameManager;
-		//	std::cout << GAME_RESULT[static_cast<int>(gameManager.Play())];
+
+//	Bots::MCTSBot<5, 50> bot1;
+/*	Bots::Player bot1;
+	Bots::Player bot2;
+	GameManager<> gameManager(bot1, bot2);
+	std::cout << GAME_RESULT[static_cast<int>(gameManager.Play())];*/
 
 		//	GameManager<Bots::MCTSBot<5, 100>, Bots::MCTSBot<5,50>> gameManager(PrintMode::None);
-	Bots::MCTSBot<5, 100> bot1;
-	Bots::MCTSBot<5, 200> bot3;
+	Bots::MCTSBot<5, 50> bot1;
+//	Bots::MCTSBot<5, 200> bot3;
 	Bots::RandomBot bot2;
-//	GameManager<> gameManager(bot1, bot2, PrintMode::None);
+	GameManager<> gameManager(bot1, bot2, PrintMode::AllStates);
+	gameManager.Play(50);
 //	auto res = gameManager.Play(50);
 //	std::cout << res[0] << ", " << res[1] << ", " << res[2];
-	Eval::League league;
+/*	Eval::League league;
 	league.Add(bot1);
 	league.Add(bot2);
 	league.Add(bot3);
-	league.Run(250);
-
-	//	MCTSBot<5, 100>		425.761
-	//	Random				351.483
-	//	MCTSBot<5, 200>		422.755
+	league.Run(2000);*/
 
 	int i;
 	std::cin >> i;
