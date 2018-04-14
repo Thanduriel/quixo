@@ -29,7 +29,7 @@ namespace Bots {
 				winner = boardState.Winner();
 			}
 			int numSimulations = 1; // init with non zero to prevent div by zero
-			int numWins = 0;
+			float numWins = 0.f;
 			const Game::Action* action;
 			Game::CubeState player;
 			Game::Board boardState;
@@ -94,6 +94,7 @@ namespace Bots {
 				while(n->parent)
 				{
 					if (n->player == winner) ++n->numWins;
+				//	else if (winner == CubeState::Blank) n->numWins += 0.3f;
 					++n->numSimulations;
 					n = n->parent;
 				}
@@ -165,19 +166,18 @@ namespace Bots {
 		{
 			using namespace Game;
 
-			auto board = _node.boardState;
+			Board board = _node.boardState;
 
 			GameResult result;
+			CubeState currentPlayer = _node.player;
 			do {
-				CubeState currentPlayer = _node.player;
-				
 				// pick random action
 				const Action* act;
 				do {
 					int ind = Utils::g_random.Uniform(0, static_cast<int>(Board::ACTIONS.size()-1));
 					act = &Board::ACTIONS[ind];
 				} while (board.Get(act->srcX, act->srcY) == currentPlayer);
-				currentPlayer = currentPlayer == CubeState::Cross ? CubeState::Circle : CubeState::Cross;
+				currentPlayer = GetOther(currentPlayer);
 				board.Move(*act, currentPlayer);
 				result = board.Winner();
 

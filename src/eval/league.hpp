@@ -6,7 +6,7 @@
 
 namespace Eval {
 
-	constexpr int NumThreads = 1;
+	constexpr int NumThreads = 3;
 
 	class League
 	{
