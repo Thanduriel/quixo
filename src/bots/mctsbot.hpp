@@ -45,14 +45,14 @@ namespace Bots {
 		~MCTSBot()
 		{
 		//	std::cout << "step time: " << TurnTime 
-		//		<< ", avg simulations: " << m_numSimulationsTotal / m_numStepsPlayed << "\n";
+		//		<< ", avg simulations: " << numSimulationsTotal / m_numStepsPlayed << "\n";
 		}
 
 		Game::Turn Step(const Game::Board& _state) override
 		{
 			m_allocator.reset();
-			m_numSimulations = 1;
-			m_numSimulationsLog = 0;
+			int numSimulations = 1;
+			float numSimulationsLog = 0;
 
 			Node root;
 			root.boardState = _state;
@@ -68,7 +68,7 @@ namespace Bots {
 				Node* n = &root;
 				unsigned depth = 0;
 				do {
-					n = &Select(*n);
+					n = &Select(*n, numSimulationsLog);
 					++depth;
 				} while (n->childs && depth < MaxDepth);
 
@@ -98,11 +98,13 @@ namespace Bots {
 					n = n->parent;
 				}
 
-				++m_numSimulations;
-				m_numSimulationsLog = std::log(static_cast<float>(m_numSimulations));
+				++numSimulations;
+		//		if (numSimulations == 1000)
+		//			__debugbreak();
+				numSimulationsLog = std::log(static_cast<float>(numSimulations));
 			} while ((std::chrono::steady_clock::now() - begin) < std::chrono::milliseconds(TurnTime));
-		//	std::cout << "explored paths: " << m_numSimulations << std::endl;
-			m_numSimulationsTotal += m_numSimulations;
+		//	std::cout << "explored paths: " << numSimulations << std::endl;
+			numSimulationsTotal += numSimulations;
 			++m_numStepsPlayed;
 
 			Node* it = std::max_element(root.childs, root.childs + root.numChilds, [](const Node& lhs, const Node& rhs)
@@ -139,7 +141,7 @@ namespace Bots {
 		}
 
 		// returns the node that should be expanded
-		Node& Select(Node& _parent)
+		Node& Select(Node& _parent, float _numSimulationsLog)
 		{
 			float maxVal = -1.f;
 			Node* n;
@@ -147,8 +149,8 @@ namespace Bots {
 			for (int i = 0; i < _parent.numChilds; ++i)
 			{
 				Node& c = _parent.childs[i];
-				float v = static_cast<float>(c.numWins) / c.numSimulations;
-				v += 1.4f * std::sqrt(m_numSimulationsLog / c.numSimulations);
+				float v = static_cast<float>(c.numWins) / c.numSimulations
+						+ 1.4f * std::sqrt(_numSimulationsLog / c.numSimulations);
 				if (v > maxVal)
 				{
 					maxVal = v;
@@ -184,11 +186,11 @@ namespace Bots {
 			return result;
 		}
 
-		int m_numSimulations;
-		float m_numSimulationsLog;
 		Utils::StackAllocator<32768> m_allocator;
 
-		uint64_t m_numSimulationsTotal = 0;
-		uint32_t m_numStepsPlayed = 0;
+		// not relevant to step selection
+		// does not work properly when multi threaded
+		mutable uint64_t numSimulationsTotal = 0;
+		mutable uint32_t m_numStepsPlayed = 0;
 	};
 }

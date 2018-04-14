@@ -48,18 +48,18 @@ int main()
 	std::cout << GAME_RESULT[static_cast<int>(gameManager.Play())];*/
 
 		//	GameManager<Bots::MCTSBot<5, 100>, Bots::MCTSBot<5,50>> gameManager(PrintMode::None);
-	Bots::MCTSBot<5, 50> bot1;
-//	Bots::MCTSBot<5, 200> bot3;
+	Bots::MCTSBot<5, 500> bot1;
+	Bots::MCTSBot<5, 1000> bot3;
 	Bots::RandomBot bot2;
-	GameManager<> gameManager(bot1, bot2, PrintMode::AllStates);
-	gameManager.Play(50);
-//	auto res = gameManager.Play(50);
-//	std::cout << res[0] << ", " << res[1] << ", " << res[2];
-/*	Eval::League league;
+	Bots::RandomBot bot4;
+	GameManager<> gameManager(bot4, bot2, PrintMode::None);
+	auto res = gameManager.Play(50);
+	std::cout << res[0] << ", " << res[1] << ", " << res[2];
+	Eval::League league;
 	league.Add(bot1);
 	league.Add(bot2);
 	league.Add(bot3);
-	league.Run(2000);*/
+	league.Run(200);
 
 	int i;
 	std::cin >> i;
