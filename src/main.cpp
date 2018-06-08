@@ -41,26 +41,44 @@ int main()
 		std::cout << (board.Winner() == GameResult::Cross);*/
 
 
-//	Bots::MCTSBot<5, 50> bot1;
-/*	Bots::Player bot1;
+/*	Bots::MCTSBot<3, 50> bot1;
+//	Bots::Player bot1;
 	Bots::Player bot2;
 	GameManager<> gameManager(bot1, bot2);
 	std::cout << GAME_RESULT[static_cast<int>(gameManager.Play())];*/
 
 		//	GameManager<Bots::MCTSBot<5, 100>, Bots::MCTSBot<5,50>> gameManager(PrintMode::None);
-	Bots::MCTSBot<3, 50> bot1;
+	Bots::MCTSBot<2, 50> bot1;
 	Bots::MCTSBot<3, 100> bot3;
 	Bots::RandomBot bot2;
-	Bots::RandomBot bot4;
+//	Bots::RandomBot bot4;
+	Bots::MCTSBot<2, 100> bot4;
+//	Bots::MCTSBot<2, 200> bot5;
+//	Bots::MCTSBot<2, 400> bot6;
 //	GameManager<> gameManager(bot4, bot2, PrintMode::None);
 //	auto res = gameManager.Play(50);
 //	std::cout << res[0] << ", " << res[1] << ", " << res[2];
 	Eval::League league;
 	league.Add(bot1);
 	league.Add(bot2);
-	league.Add(bot3);
-	league.Run(600);
+	league.Add(bot4);
+//	league.Add(bot5);
+//	league.Add(bot6);
+	league.Run(1000);
 
+	/*MCTSBot<2, 50>   484.292
+Random   -121.413
+MCTSBot<2, 100>   531.544
+MCTSBot<2, 200>   545.54
+MCTSBot<2, 400>   560.037*/
+	/*
+		MCTSBot<3, 50>   528.188
+		Random   -201.838
+		MCTSBot<3, 100>   547.518
+		MCTSBot<5, 100>   396.615
+		MCTSBot<2, 100>   716.646
+		MCTSBot<4, 100>   412.871
+	*/
 	int i;
 	std::cin >> i;
 	return 0;

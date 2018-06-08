@@ -64,45 +64,47 @@ namespace Bots {
 			
 			auto begin = std::chrono::steady_clock::now();
 			do{
-				// descend to a leaf
-				Node* n = &root;
-				unsigned depth = 0;
-				do {
-					n = &Select(*n, numSimulationsLog);
-					++depth;
-				} while (n->childs && depth < MaxDepth);
-
-				// expand, choose random child node
-				if (depth < MaxDepth)
+				for (int j = 0; j < 5; ++j)
 				{
-					auto&[nodes, count] = Expand(*n);
-					n->childs = nodes;
-					n->numChilds = count;
+					// descend to a leaf
+					Node* n = &root;
+					unsigned depth = 0;
+					do {
+						n = &Select(*n);
+						++depth;
+					} while (n->childs && depth < MaxDepth);
 
-					n = &nodes[Utils::g_random.Uniform(0, count - 1)];
+					// expand, choose random child node
+					if (depth < MaxDepth)
+					{
+						auto&[nodes, count] = Expand(*n);
+						n->childs = nodes;
+						n->numChilds = count;
+
+						n = &nodes[Utils::g_random.Uniform(0, count - 1)];
+					}
+
+					//play out
+					using namespace Game;
+					GameResult result = Playout(*n);
+					CubeState winner;
+					if (result == GameResult::Cross) winner = CubeState::Cross;
+					else if (result == GameResult::Circle) winner = CubeState::Circle;
+					else winner = CubeState::Blank;
+
+					//propagate result back
+					while (n)
+					{
+						if (n->player == winner) ++n->numWins;
+						//	else if (winner == CubeState::Blank) n->numWins += 0.3f;
+						++n->numSimulations;
+						n = n->parent;
+					}
+
+					++numSimulations;
+					//		if (numSimulations == 1000)
+					//			__debugbreak();
 				}
-
-				//play out
-				using namespace Game;
-				GameResult result = Playout(*n);
-				CubeState winner;
-				if (result == GameResult::Cross) winner = CubeState::Cross;
-				else if (result == GameResult::Circle) winner = CubeState::Circle;
-				else winner = CubeState::Blank;
-
-				//propagate result back
-				while(n->parent)
-				{
-					if (n->player == winner) ++n->numWins;
-				//	else if (winner == CubeState::Blank) n->numWins += 0.3f;
-					++n->numSimulations;
-					n = n->parent;
-				}
-
-				++numSimulations;
-		//		if (numSimulations == 1000)
-		//			__debugbreak();
-				numSimulationsLog = std::log(static_cast<float>(numSimulations));
 			} while ((std::chrono::steady_clock::now() - begin) < std::chrono::milliseconds(TurnTime));
 		//	std::cout << "explored paths: " << numSimulations << std::endl;
 			numSimulationsTotal += numSimulations;
@@ -142,16 +144,16 @@ namespace Bots {
 		}
 
 		// returns the node that should be expanded
-		Node& Select(Node& _parent, float _numSimulationsLog)
+		Node& Select(Node& _parent)
 		{
 			float maxVal = -1.f;
 			Node* n;
-
+			const float numSimulationsLog = std::log(static_cast<float>(_parent.numSimulations));
 			for (int i = 0; i < _parent.numChilds; ++i)
 			{
 				Node& c = _parent.childs[i];
 				float v = static_cast<float>(c.numWins) / c.numSimulations
-						+ 1.4f * std::sqrt(_numSimulationsLog / c.numSimulations);
+						+ 1.4f * std::sqrt(numSimulationsLog / c.numSimulations);
 				if (v > maxVal)
 				{
 					maxVal = v;
