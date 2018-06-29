@@ -2,6 +2,7 @@
 
 #include "board.hpp"
 #include "bots/bot.hpp"
+#include "eval/tracker.hpp"
 #include <iostream>
 
 namespace Game{
@@ -13,7 +14,7 @@ namespace Game{
 		None
 	};
 
-	template<unsigned MaxTurns = 200>
+	template<unsigned MaxTurns = 200, bool UseTracker = true>
 	class GameManager
 	{
 	public:
@@ -48,6 +49,7 @@ namespace Game{
 					!= (i % 2 ? m_bot2.GetSymbol() : m_bot1.GetSymbol()));
 
 				board.Move(turn.action, turn.state);
+				if constexpr(UseTracker) m_tracker.Add(turn.action);
 
 				if (m_printMode == PrintMode::AllStates)
 				{
@@ -57,6 +59,7 @@ namespace Game{
 				const GameResult res = board.Winner();
 				if (res != GameResult::None)
 				{
+					if constexpr(UseTracker) m_tracker.NextGame();
 					if (m_printMode == PrintMode::EndState) 
 					{ 
 						board.Print(std::cout); 
@@ -68,9 +71,12 @@ namespace Game{
 			return GameResult::Draw;
 		}
 
+		const Eval::Tracker& GetTracker() { return m_tracker; }
+
 	private:
 		Bots::BasicBot& m_bot1;
 		Bots::BasicBot& m_bot2;
 		PrintMode m_printMode;
+		Eval::Tracker m_tracker;
 	};
 }
