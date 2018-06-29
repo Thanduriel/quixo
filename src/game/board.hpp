@@ -22,7 +22,7 @@ namespace Game {
 		None,
 		COUNT
 	};
-	constexpr std::array<char*, static_cast<int>(GameResult::COUNT)> GAME_RESULT =
+	constexpr std::array<const char*, static_cast<int>(GameResult::COUNT)> GAME_RESULT =
 	{ {
 		"Cross",
 		"Circle",
@@ -130,6 +130,8 @@ namespace Game {
 
 		// does not work for blanks!
 		int GetNumSymbols(CubeState _symbol) const;
+
+		std::pair<uint32_t, uint32_t> Get() { return { m_crosses,m_circles }; }
 	private:
 		uint32_t m_crosses;
 		uint32_t m_circles;

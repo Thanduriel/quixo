@@ -8,38 +8,67 @@
 
 #include <iostream>
 
-//Utils::ThreadPool Utils::g_threadPool(2);
+struct TestResults
+{
+	int numTests;
+	int numPassed;
+} testResults;
+
+#define TEST(expression, message)							\
+    do{														\
+		if( !(expression) )									\
+			std::cerr << "failed at: " << message << '\n';	\
+		else ++testResults.numPassed;						\
+		++testResults.numTests;								\
+	}while(false)
+
+void UnitTest()
+{
+	using namespace Game;
+	using namespace Bots;
+	Board board;
+	TEST(board.Get() == std::make_pair(0u, 0u), "initialize empty board");
+	board.Move(Action(1, 0, 4, 0), CubeState::Cross);
+	TEST(board.Get(4, 0) == CubeState::Cross && board.Get(1, 0) == CubeState::Blank,
+		"move single cube horizontal");
+	board.Move(Action(0, 0, 4, 0), CubeState::Cross);
+	board.Move(Action(0, 0, 4, 0), CubeState::Cross);
+	board.Move(Action(0, 0, 4, 0), CubeState::Cross);
+	board.Move(Action(0, 0, 4, 0), CubeState::Cross);
+	TEST(board.Get(0, 0) == CubeState::Cross
+		&& board.Get(1, 0) == CubeState::Cross
+		&& board.Get(2, 0) == CubeState::Cross
+		&& board.Get(3, 0) == CubeState::Cross
+		&& board.Get(4, 0) == CubeState::Cross, "move whole line");
+	TEST(board.Winner() == GameResult::Cross, "horizontal line win");
+	board.Move(Action(1, 4, 1, 0), CubeState::Circle);
+	TEST(board.Winner() == GameResult::None, "destroy line");
+	board.Move(Action(2, 4, 2, 0), CubeState::Circle);
+	board.Move(Action(2, 4, 2, 0), CubeState::Circle);
+	TEST(board.Get(2, 2) == CubeState::Cross, "move cubes vertical");
+	board.Move(Action(3, 4, 3, 0), CubeState::Circle);
+	board.Move(Action(3, 4, 3, 0), CubeState::Circle);
+	board.Move(Action(3, 4, 3, 0), CubeState::Circle);
+	board.Move(Action(4, 0, 4, 4), CubeState::Cross);
+	TEST(board.Winner() == GameResult::Cross, "diagonal win");
+	
+	board = Board();
+	for (int i = 0; i < 5; ++i)
+	{
+		board.Move(Action(0, 0, 0, 4), CubeState::Circle);
+		board.Move(Action(1, 0, 1, 4), CubeState::Cross);
+	}
+	TEST(board.Winner() == GameResult::Draw, "vertical win and draw");
+
+	std::cerr << testResults.numPassed << " / " << testResults.numTests << std::endl;
+}
 
 int main()
 {
 	using namespace Game;
 	using namespace Bots;
 
-	/*	Board board;
-		board.Move(Action(1, 0, 4, 0), CubeState::Cross);
-		board.Move(Action(1, 0, 0, 0), CubeState::Cross);
-		board.Print(std::cout);
-		board.Move(Action(4, 0, 0, 0), CubeState::Cross);
-		board.Move(Action(4, 2, 0, 2), CubeState::Cross);
-		board.Move(Action(4, 2, 0, 2), CubeState::Circle);
-		board.Move(Action(4, 2, 0, 2), CubeState::Cross);
-		board.Move(Action(0, 3, 4, 3), CubeState::Cross);
-		board.Move(Action(0, 3, 4, 3), CubeState::Cross);
-		board.Print(std::cout);
-		std::cout << std::endl;
-		board.Move(Action(1, 4, 1, 0), CubeState::Cross);
-		board.Move(Action(1, 4, 1, 0), CubeState::Cross);
-		board.Move(Action(4, 4, 4, 0), CubeState::Cross);
-		board.Print(std::cout);
-		std::cout << std::endl;
-		board.Move(Action(2, 0, 2, 4), CubeState::Cross);
-		board.Move(Action(2, 0, 2, 4), CubeState::Cross);
-		board.Print(std::cout);
-		std::cout << std::endl;
-		std::cout << (board.Winner() == GameResult::Cross);
-		board.Move(Action(2, 0, 2, 4), CubeState::Cross);
-		std::cout << (board.Winner() == GameResult::Cross);*/
-
+	UnitTest();
 
 /*	Bots::MCTSBot<3, 50> bot1;
 //	Bots::Player bot1;

@@ -47,12 +47,7 @@ namespace Game{
 				assert(board.Get(turn.action.srcX, turn.action.srcY) 
 					!= (i % 2 ? m_bot2.GetSymbol() : m_bot1.GetSymbol()));
 
-				auto s = board.Get(turn.action.srcX, turn.action.srcY);
-				int n = board.GetNumSymbols(turn.state);
 				board.Move(turn.action, turn.state);
-				if (n > board.GetNumSymbols(turn.state) 
-					|| (s == CubeState::Blank && n+1 != board.GetNumSymbols(turn.state)))
-					int ue = 0;
 
 				if (m_printMode == PrintMode::AllStates)
 				{
