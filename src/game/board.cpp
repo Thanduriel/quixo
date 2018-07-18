@@ -132,12 +132,20 @@ namespace Game {
 		0b00000000000100001000010000100001
 	};
 
+	bool Board::IsOuter(int x, int y) const
+	{
+		return x * y ==  0 || x == MAX_INDEX || y == MAX_INDEX;
+	}
+
 	bool Board::IsLegal(const Action& _action) const
 	{
-		return (_action.srcX != _action.dstX && _action.srcY == _action.dstY
+		for (auto& action : ACTIONS)
+			if (action == _action) return true;
+		return false;
+	/*	return (_action.srcX != _action.dstX && _action.srcY == _action.dstY
 			|| _action.srcX == _action.dstX && _action.srcY != _action.dstY)
-			&& (_action.srcX == 0 || _action.srcX == MAX_INDEX
-				|| _action.srcY == 0 || _action.srcY == MAX_INDEX);
+			&& IsOuter(_action.srcX, _action.srcY) && IsOuter(_action.dstX, _action.dstY);
+			*/
 	}
 
 	GameResult Board::Winner() const

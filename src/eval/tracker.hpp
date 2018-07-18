@@ -8,7 +8,7 @@ namespace Eval{
 	class Tracker
 	{
 	public:
-		Tracker(size_t _maxNumTurns = 1u);
+		Tracker(size_t _maxNumTurns = 10u);
 
 		void Add(const Game::Action& _action);
 		void NextGame() { m_turnCount = 0; }
@@ -20,5 +20,6 @@ namespace Eval{
 
 		size_t m_turnCount = 0;
 		std::vector<HeatMap<Game::Board::BoardSize>> m_turnStats;
+		HeatMap<Game::Board::BoardSize> m_aggregatedStats;
 	};
 }

@@ -51,6 +51,14 @@ namespace Game {
 			return *this;
 		}
 
+		constexpr bool operator==(const Action& _oth) const
+		{
+			return srcX == _oth.srcX
+			&& srcY == _oth.srcY
+			&& dstX == _oth.dstX
+			&& dstY == _oth.dstY;
+		}
+
 		int srcX;
 		int srcY;
 		int dstX;
@@ -107,6 +115,7 @@ namespace Game {
 
 		Board() : m_crosses(0), m_circles(0) {}
 
+		bool IsOuter(int x, int y) const;
 		bool IsLegal(const Action& _action) const;
 
 		GameResult Winner() const;

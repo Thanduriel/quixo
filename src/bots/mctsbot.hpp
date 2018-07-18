@@ -129,6 +129,7 @@ namespace Bots {
 			using namespace Game;
 			Node* nodes = static_cast<Node*> (m_allocator.alloc(sizeof(Node) * Board::ACTIONS.size() - 2));
 			unsigned ind = 0;
+			const CubeState player = GetOther(_node.player);
 
 			for (const Action& a : Board::ACTIONS)
 			{
@@ -136,7 +137,7 @@ namespace Bots {
 					continue;
 
 				new (nodes + ind) (Node)(_node.boardState, &a, &_node,
-					GetOther(_node.player));
+					player);
 				++ind;
 			}
 			

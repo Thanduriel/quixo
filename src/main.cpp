@@ -6,6 +6,9 @@
 #include "utils/threadpool.hpp"
 #include "eval/league.hpp"
 
+#include "graphics/renderboard.hpp"
+#include "graphics/guibot.hpp"
+
 #include <iostream>
 
 struct TestResults
@@ -60,7 +63,8 @@ void UnitTest()
 	}
 	TEST(board.Winner() == GameResult::Draw, "vertical win and draw");
 
-	std::cerr << testResults.numPassed << " / " << testResults.numTests << std::endl;
+	std::cerr << "tests successful: " << testResults.numPassed 
+		<< " / " << testResults.numTests << std::endl;
 }
 
 int main()
@@ -70,12 +74,14 @@ int main()
 
 	UnitTest();
 
-	Bots::MCTSBot<2, 50> bot1;
-	Bots::MCTSBot<2, 50> bot2;
-	GameManager<> gameManager(bot1, bot2);
-	gameManager.Play(10);
-	gameManager.GetTracker().PrintHeatMap(0);
-//	gameManager.GetTracker().PrintHeatMap(1);
+	Graphics::RenderBoard renderBoard;
+	Bots::GUIPlayer player(renderBoard);
+	Bots::MCTSBot<2, 2000> bot1;
+	Bots::MCTSBot<2, 20> bot2;
+	GameManager<> gameManager(bot1, player);
+	gameManager.Play(100);
+	for (int i = 0; i < 10; ++i)
+		gameManager.GetTracker().PrintHeatMap(i);
 /*	Bots::MCTSBot<3, 50> bot1;
 //	Bots::Player bot1;
 	Bots::Player bot2;
