@@ -237,6 +237,27 @@ namespace Game {
 		return static_cast<CubeState>(IsNotZero(mask & m_crosses) + (IsNotZero(mask & m_circles) << 1));
 	}
 
+	void Board::Set(unsigned _idx, unsigned _idy, CubeState _newState)
+	{
+		const uint32_t mask = (1 << _idx) << (_idy * BoardSize);
+
+		if (_newState == CubeState::Cross)
+		{
+			m_crosses |= mask;
+			m_circles &= ~mask;
+		}
+		else if (_newState == CubeState::Circle)
+		{
+			m_crosses &= ~mask;
+			m_circles |= mask;
+		}
+		else
+		{
+			m_crosses &= ~mask;
+			m_circles &= ~mask;
+		}
+	}
+
 	int Board::GetNumSymbols(CubeState _symbol) const
 	{
 		uint32_t bits = _symbol == CubeState::Cross ? m_crosses : m_circles;

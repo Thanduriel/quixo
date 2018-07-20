@@ -136,6 +136,8 @@ namespace Game {
 		}
 
 		CubeState Get(unsigned _idx, unsigned _idy) const;
+		// overwrite cube directly
+		void Set(unsigned _idx, unsigned _idy, CubeState _newState);
 
 		// does not work for blanks!
 		int GetNumSymbols(CubeState _symbol) const;

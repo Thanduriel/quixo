@@ -11,6 +11,7 @@ namespace Graphics {
 		RenderBoard(int _sizeX = 1366, int _sizeY = 768);
 
 		Game::Action GetInput(const Game::Board& _state, Game::CubeState _currentPlayer);
+		void ShowEndState(const Game::Board& _state, Game::CubeState _player);
 	private:
 		void Draw();
 		void UpdateSprites(const Game::Board& _state);

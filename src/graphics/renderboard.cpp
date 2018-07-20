@@ -1,4 +1,5 @@
 #include "renderboard.hpp"
+#include <string>
 
 namespace Graphics {
 
@@ -113,8 +114,40 @@ namespace Graphics {
 			}
 
 			Draw();
+			sf::sleep(sf::milliseconds(16));
 		}
 		return Game::Action();
+	}
+
+	void RenderBoard::ShowEndState(const Game::Board& _state, Game::CubeState _player)
+	{
+		using namespace std;
+		m_renderWindow.setTitle("QuixoAI - last winner: "s 
+			+ Game::GAME_RESULT[static_cast<int>(_state.Winner())]);
+
+		UpdateSprites(_state);
+
+		Highlight(sf::Color(255, 128, 128), [&](int x, int y) mutable
+		{
+			Game::Board state = _state;
+			state.Set(x, y, Game::CubeState::Blank);
+			return state.Winner() == Game::GameResult::None; 
+		});
+
+		Draw();
+
+		while (m_renderWindow.isOpen())
+		{
+			sf::Event event;
+			while (m_renderWindow.pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+					m_renderWindow.close();
+				else if (event.type == sf::Event::Event::MouseButtonReleased)
+					return;
+			}
+			sf::sleep(sf::milliseconds(16));
+		}
 	}
 
 	void RenderBoard::Draw()

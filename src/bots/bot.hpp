@@ -11,6 +11,8 @@ namespace Bots {
 
 		virtual Game::Turn Step(const Game::Board& _state) = 0;
 		virtual std::string GetName() const = 0;
+		// called when a game ends
+		virtual void FinalizeGame(const Game::Board& _state) {}
 
 		void SetSymbol(Game::CubeState _symbol) { m_symbol = _symbol; m_enemySymbol = GetOther(_symbol); }
 		Game::CubeState GetSymbol() const { return m_symbol; }

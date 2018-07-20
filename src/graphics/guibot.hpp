@@ -12,6 +12,7 @@ namespace Bots {
 
 		Game::Turn Step(const Game::Board& _state) override;
 		std::string GetName() const override { return "GUI Input"; }
+		void FinalizeGame(const Game::Board& _state) override;
 
 	private:
 		Graphics::RenderBoard& m_board;

@@ -65,6 +65,8 @@ namespace Game{
 						board.Print(std::cout); 
 						std::cout << "\n"; 
 					}
+					m_bot1.FinalizeGame(board);
+					m_bot2.FinalizeGame(board);
 					return  res;
 				}
 			}

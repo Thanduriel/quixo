@@ -11,4 +11,9 @@ namespace Bots {
 	{
 		return Game::Turn(m_board.GetInput(_state, m_symbol), m_symbol);
 	}
+
+	void GUIPlayer::FinalizeGame(const Game::Board& _state)
+	{
+		m_board.ShowEndState(_state, m_symbol);
+	}
 }
