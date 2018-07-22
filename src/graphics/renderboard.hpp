@@ -12,6 +12,7 @@ namespace Graphics {
 
 		Game::Action GetInput(const Game::Board& _state, Game::CubeState _currentPlayer);
 		void ShowEndState(const Game::Board& _state, Game::CubeState _player);
+		void ShowWinrates(const Game::Board& _state, Game::CubeState _player);
 	private:
 		void Draw();
 		void UpdateSprites(const Game::Board& _state);
@@ -31,6 +32,9 @@ namespace Graphics {
 		sf::Texture m_blankTexture;
 
 		std::array<sf::Sprite, 5 * 5> m_board;
+		std::array<sf::Text, 5 * 5> m_fieldTexts;
+		sf::Font m_font;
+		bool m_showText;
 		int m_cubeSize;
 	};
 }

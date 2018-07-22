@@ -48,7 +48,7 @@ namespace Bots {
 		//		<< ", avg simulations: " << numSimulationsTotal / m_numStepsPlayed << "\n";
 		}
 
-		Game::Turn Step(const Game::Board& _state) override
+		Node BuildTree(const Game::Board& _state)
 		{
 			m_allocator.reset();
 			int numSimulations = 1;
@@ -58,12 +58,12 @@ namespace Bots {
 			root.boardState = _state;
 			// first real move is from the player
 			root.player = m_enemySymbol;
-			auto& [nodes, count] = Expand(root);
+			auto&[nodes, count] = Expand(root);
 			root.childs = nodes;
 			root.numChilds = count;
-			
+
 			auto begin = std::chrono::steady_clock::now();
-			do{
+			do {
 				for (int j = 0; j < 5; ++j)
 				{
 					// descend to a leaf
@@ -102,13 +102,18 @@ namespace Bots {
 					}
 
 					++numSimulations;
-					//		if (numSimulations == 1000)
-					//			__debugbreak();
 				}
 			} while ((std::chrono::steady_clock::now() - begin) < std::chrono::milliseconds(TurnTime));
-		//	std::cout << "explored paths: " << numSimulations << std::endl;
+			//	std::cout << "explored paths: " << numSimulations << std::endl;
 			numSimulationsTotal += numSimulations;
 			++m_numStepsPlayed;
+
+			return root;
+		}
+
+		Game::Turn Step(const Game::Board& _state) override
+		{
+			Node root = BuildTree(_state);
 
 			Node* it = std::max_element(root.childs, root.childs + root.numChilds, [](const Node& lhs, const Node& rhs)
 			{

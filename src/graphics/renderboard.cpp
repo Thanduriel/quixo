@@ -1,10 +1,14 @@
 #include "renderboard.hpp"
 #include <string>
+#include "bots/mctsbot.hpp"
 
 namespace Graphics {
 
+	using namespace sf;
+
 	RenderBoard::RenderBoard(int _sizeX, int _sizeY)
-		: m_renderWindow()
+		: m_renderWindow(),
+		m_showText(false)
 	{
 		sf::ContextSettings settings;
 		settings.antialiasingLevel = 4;
@@ -15,6 +19,7 @@ namespace Graphics {
 		m_crossTexture.loadFromFile("../content/cross.png");
 		m_circleTexture.loadFromFile("../content/circle.png");
 		m_blankTexture.loadFromFile("../content/blank.png");
+		m_font.loadFromFile("../content/OpenSans.ttf");
 
 		const int minSize = std::min(_sizeX, _sizeY);
 		const int imgSize = minSize / 5;
@@ -26,9 +31,16 @@ namespace Graphics {
 			{
 				sf::Sprite& sprite = m_board[ix + iy * 5];
 				sprite.setTexture(m_blankTexture);
-				sprite.setPosition(sf::Vector2f(static_cast<float>(ix * imgSize), 
-					static_cast<float>(iy * imgSize)));
+				sf::Vector2f pos = sf::Vector2f(static_cast<float>(ix * imgSize),
+					static_cast<float>(iy * imgSize));
+				sprite.setPosition(pos);
 				sprite.setScale(sf::Vector2f(scale, scale));
+
+				sf::Text& text = m_fieldTexts[ix + iy * 5];
+				text.setFont(m_font);
+				text.setPosition(pos);
+				text.setString("");
+				text.setCharacterSize(24);
 			}
 
 		Draw();
@@ -38,8 +50,8 @@ namespace Graphics {
 	{
 		using namespace sf;
 
-		UpdateSprites(_state);
-		
+		m_showText = false;
+		UpdateSprites(_state);	
 
 		Vector2i currentCube(0,0);
 		Vector2i srcCube;
@@ -65,6 +77,12 @@ namespace Graphics {
 			{
 				if (event.type == sf::Event::Closed)
 					m_renderWindow.close();
+				else if (event.type == sf::Event::KeyReleased
+					&& event.key.code == sf::Keyboard::C
+					&& !m_showText)
+				{
+					ShowWinrates(_state, _currentPlayer);
+				}
 				Vector2i pos = Mouse::getPosition(m_renderWindow);
 				pos.x /= m_cubeSize;
 				pos.y /= m_cubeSize;
@@ -150,11 +168,56 @@ namespace Graphics {
 		}
 	}
 
+	void RenderBoard::ShowWinrates(const Game::Board& _state, Game::CubeState _player)
+	{
+		std::vector<std::pair<Game::Action, float>> winrates;
+
+		Bots::MCTSBot<3, 3000> predictor;
+		predictor.SetSymbol(_player);
+		auto root = predictor.BuildTree(_state);
+
+		for (int i = 0; i < root.numChilds; ++i)
+		{
+			auto& node = root.childs[i];
+			winrates.emplace_back(*node.action, node.numWins / node.numSimulations);
+		}
+
+		std::array<float, 5 * 5> currentMax{-1.f};
+		std::array<float, 5 * 5> currentMaxDst{ -1.f };
+		for (const auto&[action, winrate] : winrates)
+		{
+			const int indSrc = action.srcX + action.srcY * 5;
+			if (winrate > currentMax[indSrc]) currentMax[indSrc] = winrate;
+
+			const int indDst = action.dstX + action.dstY* 5;
+			if (winrate > currentMaxDst[indDst]) currentMaxDst[indDst] = winrate;
+		}
+
+		for (int i = 0; i < 5 * 5; ++i)
+		{
+			if (currentMax[i] != -1.f)
+			{
+				std::string srcWin = std::to_string(currentMax[i]);
+				srcWin.resize(4);
+				std::string dstWin = std::to_string(currentMaxDst[i]);
+				dstWin.resize(4);
+				m_fieldTexts[i].setString(srcWin + " / " + dstWin);
+			}
+		}
+
+		m_showText = true;
+	}
+
 	void RenderBoard::Draw()
 	{
 		m_renderWindow.clear();
 		for (auto& sprite : m_board)
 			m_renderWindow.draw(sprite);
+		if (m_showText)
+		{
+			for (auto& text : m_fieldTexts)
+				m_renderWindow.draw(text);
+		}
 		m_renderWindow.display();
 	}
 

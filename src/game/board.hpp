@@ -147,7 +147,6 @@ namespace Game {
 		uint32_t m_crosses;
 		uint32_t m_circles;
 
-
 		constexpr uint32_t IsNotZero(uint32_t x) const {return ~(~x & (x + ~0)) >> 31; };
 	};
 }
