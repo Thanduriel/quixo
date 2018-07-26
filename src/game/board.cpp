@@ -137,15 +137,32 @@ namespace Game {
 		return x * y ==  0 || x == MAX_INDEX || y == MAX_INDEX;
 	}
 
+	bool Board::IsRepeat(const Action& _action, CubeState _newState) const
+	{
+		if constexpr(!RepeatsIlegal) false;
+		// to restore old state
+		MovementBoard current(*this);
+		current.Move(_action, _newState);
+
+		return current == m_previousState;
+	}
+
 	bool Board::IsLegal(const Action& _action) const
 	{
-		for (auto& action : ACTIONS)
+		for (auto& action : MovementBoard::ACTIONS)
 			if (action == _action) return true;
 		return false;
 	/*	return (_action.srcX != _action.dstX && _action.srcY == _action.dstY
 			|| _action.srcX == _action.dstX && _action.srcY != _action.dstY)
 			&& IsOuter(_action.srcX, _action.srcY) && IsOuter(_action.dstX, _action.dstY);
 			*/
+	}
+
+	void Board::Move(const Action& _action, CubeState _newState)
+	{
+		if constexpr(RepeatsIlegal) m_previousState = *this;
+
+		MovementBoard::Move(_action, _newState);
 	}
 
 	GameResult Board::Winner() const
@@ -167,16 +184,16 @@ namespace Game {
 		return GameResult::None;
 	}
 
-	void Board::Move(const Action& _action, CubeState _newState)
+	void MovementBoard::Move(const Action& _action, CubeState _newState)
 	{
-		assert(IsLegal(_action));
+	//	assert(IsLegal(_action));
 		Move(_action.srcX, _action.srcY, _action.dstX, _action.dstY, m_crosses,
 			_newState == CubeState::Cross ? 1u : 0u);
 		Move(_action.srcX, _action.srcY, _action.dstX, _action.dstY, m_circles,
 			_newState == CubeState::Circle ? 1u : 0u);
 	}
 
-	void Board::Move(int _srcX, int _srcY, int _destX, int _destY, uint32_t& _board, uint32_t _newState)
+	void MovementBoard::Move(int _srcX, int _srcY, int _destX, int _destY, uint32_t& _board, uint32_t _newState)
 	{
 		uint32_t line;
 
@@ -228,7 +245,7 @@ namespace Game {
 		_board |= line;
 	}
 
-	CubeState Board::Get(unsigned _idx, unsigned _idy) const
+	CubeState MovementBoard::Get(unsigned _idx, unsigned _idy) const
 	{
 		const uint32_t mask = (1 << _idx) << (_idy * BoardSize);
 
@@ -237,7 +254,7 @@ namespace Game {
 		return static_cast<CubeState>(IsNotZero(mask & m_crosses) + (IsNotZero(mask & m_circles) << 1));
 	}
 
-	void Board::Set(unsigned _idx, unsigned _idy, CubeState _newState)
+	void MovementBoard::Set(unsigned _idx, unsigned _idy, CubeState _newState)
 	{
 		const uint32_t mask = (1 << _idx) << (_idy * BoardSize);
 
@@ -258,7 +275,7 @@ namespace Game {
 		}
 	}
 
-	int Board::GetNumSymbols(CubeState _symbol) const
+	int MovementBoard::GetNumSymbols(CubeState _symbol) const
 	{
 		uint32_t bits = _symbol == CubeState::Cross ? m_crosses : m_circles;
 		int count = 0;
@@ -269,5 +286,10 @@ namespace Game {
 		}
 
 		return count;
+	}
+
+	bool MovementBoard::operator==(const MovementBoard& _oth) const
+	{
+		return m_crosses == _oth.m_crosses && m_circles == _oth.m_circles;
 	}
 }

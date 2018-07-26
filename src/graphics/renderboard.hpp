@@ -8,10 +8,14 @@ namespace Graphics {
 	class RenderBoard 
 	{
 	public:
-		RenderBoard(int _sizeX = 1366, int _sizeY = 768);
+		RenderBoard(int _sizeX = 768, int _sizeY = 768);
 
 		Game::Action GetInput(const Game::Board& _state, Game::CubeState _currentPlayer);
+
+		// Display the given state and highlight winning lines
 		void ShowEndState(const Game::Board& _state, Game::CubeState _player);
+
+		// Estimate win-rates from random play-out.
 		void ShowWinrates(const Game::Board& _state, Game::CubeState _player);
 	private:
 		void Draw();

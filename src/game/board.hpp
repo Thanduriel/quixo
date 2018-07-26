@@ -30,7 +30,7 @@ namespace Game {
 		"None"
 	} };
 
-	constexpr char* STATE_CHARS = "+xo";
+	constexpr const char* STATE_CHARS = "+xo";
 
 	struct Action
 	{
@@ -105,24 +105,55 @@ namespace Game {
 
 	private:
 	};
+	
 
-	class Board
+	// implementation of movement logic
+	class MovementBoard
 	{
 	public:
 		constexpr static int BoardSize = 5;
 		constexpr static int MAX_INDEX = BoardSize - 1;
 		constexpr static ActionCollection<BoardSize> ACTIONS{};
 
-		Board() : m_crosses(0), m_circles(0) {}
+		MovementBoard() : m_crosses(0), m_circles(0) {}
+
+		CubeState Get(unsigned _idx, unsigned _idy) const;
+		// overwrite cube directly
+		void Set(unsigned _idx, unsigned _idy, CubeState _newState);
+
+		void Move(const Action& _action, CubeState _newState);
+
+		// does not work for blanks!
+		int GetNumSymbols(CubeState _symbol) const;
+
+		std::pair<uint32_t, uint32_t> Get() { return { m_crosses,m_circles }; }
+
+		bool operator==(const MovementBoard& _oth) const;
+
+	protected:
+		void Move(int _srcX, int _srcY, int _destX, int _destY, uint32_t& _board, uint32_t _newState);
+
+		uint32_t m_crosses;
+		uint32_t m_circles;
+
+		constexpr static uint32_t IsNotZero(uint32_t x) { return ~(~x & (x + ~0)) >> 31; };
+	};
+
+	// movement board + rules layer
+	class Board : public MovementBoard
+	{
+	public:
+		constexpr static bool RepeatsIlegal = true;
+
+		using MovementBoard::MovementBoard;
 
 		bool IsOuter(int x, int y) const;
 		bool IsLegal(const Action& _action) const;
+		bool IsRepeat(const Action& _action, CubeState _newState) const;
 
 		GameResult Winner() const;
 
 		void Move(const Action& _action, CubeState _newState);
-
-		void Move(int _srcX, int _srcY, int _destX, int _destY, uint32_t& _board, uint32_t _newState);
 
 		template<typename StreamT>
 		void Print(StreamT& _stream) const
@@ -134,19 +165,7 @@ namespace Game {
 				_stream << "\n";
 			}
 		}
-
-		CubeState Get(unsigned _idx, unsigned _idy) const;
-		// overwrite cube directly
-		void Set(unsigned _idx, unsigned _idy, CubeState _newState);
-
-		// does not work for blanks!
-		int GetNumSymbols(CubeState _symbol) const;
-
-		std::pair<uint32_t, uint32_t> Get() { return { m_crosses,m_circles }; }
 	private:
-		uint32_t m_crosses;
-		uint32_t m_circles;
-
-		constexpr uint32_t IsNotZero(uint32_t x) const {return ~(~x & (x + ~0)) >> 31; };
+		MovementBoard m_previousState;
 	};
 }

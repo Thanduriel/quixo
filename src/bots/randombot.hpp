@@ -16,7 +16,8 @@ namespace Bots {
 			const Action* action;
 			do{
 				action = &Board::ACTIONS[Utils::g_random.Uniform(0, static_cast<int>(Board::ACTIONS.size()) - 1)];
-			} while (_state.Get(action->srcX, action->srcY) == m_enemySymbol);
+			} while (_state.Get(action->srcX, action->srcY) == m_enemySymbol
+				|| _state.IsRepeat(*action, m_symbol));
 
 			return Turn(*action, m_symbol);
 		}

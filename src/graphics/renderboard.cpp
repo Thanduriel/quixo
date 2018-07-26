@@ -106,7 +106,9 @@ namespace Graphics {
 							srcCube = currentCube;
 							Highlight(Color(128, 128, 128), [&](int x, int y) 
 							{
-								return _state.IsLegal(Game::Action(srcCube.x, srcCube.y, x, y));
+								Game::Action action(srcCube.x, srcCube.y, x, y);
+								return _state.IsLegal(action)
+									&& !_state.IsRepeat(action, _currentPlayer);
 							});
 						}
 						else
@@ -114,6 +116,7 @@ namespace Graphics {
 							dstCube = currentCube;
 							Game::Action action(srcCube.x, srcCube.y, dstCube.x, dstCube.y);
 							if (_state.IsLegal(action) &&
+								!_state.IsRepeat(action, _currentPlayer) &&
 								(_state.Get(srcCube.x, srcCube.y) == _currentPlayer
 									|| _state.Get(srcCube.x, srcCube.y) == Game::CubeState::Blank))
 							{
@@ -172,7 +175,7 @@ namespace Graphics {
 	{
 		std::vector<std::pair<Game::Action, float>> winrates;
 
-		Bots::MCTSBot<3, 3000> predictor;
+		Bots::MCTSBot<2, 3000> predictor;
 		predictor.SetSymbol(_player);
 		auto root = predictor.BuildTree(_state);
 

@@ -140,6 +140,8 @@ namespace Bots {
 			{
 				if (_node.boardState.Get(a.srcX, a.srcY) == _node.player)
 					continue;
+				if (_node.boardState.IsRepeat(a, player))
+					continue;
 
 				new (nodes + ind) (Node)(_node.boardState, &a, &_node,
 					player);

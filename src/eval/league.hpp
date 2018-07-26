@@ -3,6 +3,7 @@
 #include "bots/bot.hpp"
 #include <vector>
 #include <mutex>
+#include <memory>
 
 namespace Eval {
 

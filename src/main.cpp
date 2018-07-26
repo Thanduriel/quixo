@@ -75,10 +75,11 @@ int main()
 	UnitTest();
 
 	Graphics::RenderBoard renderBoard;
-	Bots::GUIPlayer player(renderBoard);
-	Bots::MCTSBot<2, 2000> bot1;
-	Bots::MCTSBot<2, 20> bot2;
-	GameManager<> gameManager(bot1, player);
+	Bots::GUIPlayer player1(renderBoard);
+	Bots::GUIPlayer player2(renderBoard);
+	Bots::MCTSBot<2, 100> bot1;
+	Bots::MCTSBot<2, 50> bot2;
+	GameManager<> gameManager(player1, player2);
 	gameManager.Play(100);
 	for (int i = 0; i < 10; ++i)
 		gameManager.GetTracker().PrintHeatMap(i);
