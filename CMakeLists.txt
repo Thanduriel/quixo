@@ -58,7 +58,6 @@ endif(MSVC)
 
 
 # faster compilation with multithreading
-# cmake does not support vs compiler switches for std
 if(MSVC)
 	add_compile_options( /std:c++17 )
 	
@@ -72,11 +71,11 @@ if(MSVC)
 	add_compile_options( "${OPTIMIZATION_OPTIONS}" )
 endif(MSVC)
 
-add_subdirectory("dependencies/SFML")
 include_directories("src")
 add_executable(quixo ${SOURCE_FILES})
 
 if(USE_GRAPHICS)
+	add_subdirectory("dependencies/SFML")
 	include_directories("dependencies/SFML/include")
 	target_link_libraries(quixo sfml-system sfml-graphics sfml-window)
 endif(USE_GRAPHICS)
