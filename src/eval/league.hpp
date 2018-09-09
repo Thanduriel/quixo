@@ -17,11 +17,11 @@ namespace Eval {
 		template<typename T, typename =std::enable_if_t<std::is_base_of_v<Bots::BasicBot, T>>>
 		void Add(T& _bot)
 		{
-			BotSet set;
+		/*	BotSet set;
 			set.reserve(NumThreads);
 			for (int i = 0; i < NumThreads; ++i)
 				set.emplace_back(new T(_bot));
-			m_bots.emplace_back(std::move(set));		
+			m_bots.emplace_back(std::move(set));*/		
 		}
 
 		void Run(int _numGames);

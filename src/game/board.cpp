@@ -139,7 +139,7 @@ namespace Game {
 
 	bool Board::IsRepeat(const Action& _action, CubeState _newState) const
 	{
-		if constexpr(!RepeatsIlegal) false;
+		if constexpr(!RepeatsIlegal) return false;
 		// to restore old state
 		MovementBoard current(*this);
 		current.Move(_action, _newState);
@@ -152,16 +152,14 @@ namespace Game {
 		for (auto& action : MovementBoard::ACTIONS)
 			if (action == _action) return true;
 		return false;
-	/*	return (_action.srcX != _action.dstX && _action.srcY == _action.dstY
-			|| _action.srcX == _action.dstX && _action.srcY != _action.dstY)
-			&& IsOuter(_action.srcX, _action.srcY) && IsOuter(_action.dstX, _action.dstY);
-			*/
 	}
 
 	void Board::Move(const Action& _action, CubeState _newState)
 	{
 		if constexpr(RepeatsIlegal) m_previousState = *this;
 
+		assert(IsLegal(_action));
+		assert(!IsRepeat(_action, _newState));
 		MovementBoard::Move(_action, _newState);
 	}
 
@@ -186,7 +184,6 @@ namespace Game {
 
 	void MovementBoard::Move(const Action& _action, CubeState _newState)
 	{
-	//	assert(IsLegal(_action));
 		Move(_action.srcX, _action.srcY, _action.dstX, _action.dstY, m_crosses,
 			_newState == CubeState::Cross ? 1u : 0u);
 		Move(_action.srcX, _action.srcY, _action.dstX, _action.dstY, m_circles,

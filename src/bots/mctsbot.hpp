@@ -8,6 +8,7 @@
 #include <vector>
 #include <chrono>
 #include <iostream>
+#include <algorithm>
 
 namespace Bots {
 
@@ -58,7 +59,7 @@ namespace Bots {
 			root.boardState = _state;
 			// first real move is from the player
 			root.player = m_enemySymbol;
-			auto&[nodes, count] = Expand(root);
+			auto[nodes, count] = Expand(root);
 			root.childs = nodes;
 			root.numChilds = count;
 
@@ -77,7 +78,7 @@ namespace Bots {
 					// expand, choose random child node
 					if (depth < MaxDepth)
 					{
-						auto&[nodes, count] = Expand(*n);
+						auto[nodes, count] = Expand(*n);
 						n->childs = nodes;
 						n->numChilds = count;
 

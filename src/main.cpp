@@ -3,7 +3,6 @@
 #include "bots/player.hpp"
 #include "bots/mctsbot.hpp"
 #include "bots/randombot.hpp"
-#include "utils/threadpool.hpp"
 #include "eval/league.hpp"
 
 #include "graphics/renderboard.hpp"

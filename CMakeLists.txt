@@ -53,13 +53,8 @@ endmacro()
 GroupSources(src)
 
 if(MSVC)
-	add_compile_options( /MP )
-endif(MSVC)
-
-
-# faster compilation with multithreading
-if(MSVC)
 	add_compile_options( /std:c++17 )
+	add_compile_options( /MP )
 	
 	set(OPTIMIZATION_OPTIONS 
     $<$<CONFIG:Debug>:>
@@ -71,8 +66,14 @@ if(MSVC)
 	add_compile_options( "${OPTIMIZATION_OPTIONS}" )
 endif(MSVC)
 
-include_directories("src")
 add_executable(quixo ${SOURCE_FILES})
+
+# faster compilation with multithreading
+if(MSVC)
+	set_property(TARGET quixo APPEND PROPERTY LINK_FLAGS /LTCG)
+endif(MSVC)
+
+include_directories("src")
 
 if(USE_GRAPHICS)
 	add_subdirectory("dependencies/SFML")

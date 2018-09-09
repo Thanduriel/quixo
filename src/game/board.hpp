@@ -35,6 +35,7 @@ namespace Game {
 	struct Action
 	{
 		Action() = default;
+		Action(const Action&) = default;
 		constexpr Action(int _srcX, int _srcY, int _dstX, int _dstY)
 			: srcX(_srcX),
 			srcY(_srcY),
@@ -57,6 +58,11 @@ namespace Game {
 			&& srcY == _oth.srcY
 			&& dstX == _oth.dstX
 			&& dstY == _oth.dstY;
+		}
+
+		constexpr bool operator!=(const Action& _oth) const
+		{
+			return !(*this == _oth);
 		}
 
 		int srcX;
@@ -126,7 +132,7 @@ namespace Game {
 		// does not work for blanks!
 		int GetNumSymbols(CubeState _symbol) const;
 
-		std::pair<uint32_t, uint32_t> Get() { return { m_crosses,m_circles }; }
+		std::pair<uint32_t, uint32_t> Get() const { return { m_crosses,m_circles }; }
 
 		bool operator==(const MovementBoard& _oth) const;
 

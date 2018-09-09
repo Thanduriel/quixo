@@ -17,7 +17,7 @@ namespace Bots {
 		void SetSymbol(Game::CubeState _symbol) { m_symbol = _symbol; m_enemySymbol = GetOther(_symbol); }
 		Game::CubeState GetSymbol() const { return m_symbol; }
 	protected:
-		Game::CubeState GetOther(Game::CubeState _self) const
+		static Game::CubeState GetOther(Game::CubeState _self)
 		{
 			using namespace Game;
 			return _self == CubeState::Cross ? CubeState::Circle : CubeState::Cross;
